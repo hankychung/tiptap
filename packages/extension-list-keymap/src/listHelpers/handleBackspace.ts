@@ -73,6 +73,15 @@ export const handleBackspace = (editor: Editor, name: string, parentListTypes: s
     return editor.commands.joinItemBackward()
   }
 
+  const cur = editor.state.doc.resolve(listItemPos.$pos.pos).node(listItemPos.depth)
+
+  // cur.childCount === 3 -> 在list中间删除节点
+  // cur.childCount === 1 && listItemPos.depth === 2 -> 两个独立的bullet list
+  if (cur.childCount === 3 || (cur.childCount === 1 && listItemPos.depth === 2)) {
+    editor.commands.joinItemForward()
+    return
+  }
+
   // otherwise in the end, a backspace should
   // always just lift the list item if
   // joining / merging is not possible
